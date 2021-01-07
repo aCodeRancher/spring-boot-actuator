@@ -1,30 +1,24 @@
 package guru.springframework.actuator.endpoints;
 
-import org.springframework.boot.actuate.endpoint.AbstractEndpoint;
+import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
+import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
-
-/**
- * Created by jt on 12/3/16.
- */
 @Component
-public class CustomGuruEndpoint extends AbstractEndpoint<List<String>> {
+@Endpoint(id="customGuruEndpoint")
+public class CustomGuruEndpoint {
+    private Set<String> content = new HashSet<>();
 
-    public CustomGuruEndpoint() {
-        //id (path) / is sensitive
-        super("customGuruEndpoint", false);
-    }
-
-    @Override
-    public List<String> invoke() {
-
-        List<String> list = new ArrayList<>(3);
-        list.add("Umphrey's");
-        list.add("McGee");
-        list.add("Zonkey rocks!");
-        return list;
+    @ReadOperation
+    public Set<String> readOp(){
+        content.add("Umphrey's");
+        content.add("McGee");
+        content.add ("Zonkey rocks!");
+        return content;
     }
 }
