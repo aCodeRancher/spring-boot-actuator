@@ -8,6 +8,8 @@ import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.function.Supplier;
+
 @Configuration
 public class GaugeConfig {
 
@@ -26,5 +28,11 @@ public class GaugeConfig {
     @Bean
     public Gauge countCategories(MeterRegistry registry, ProductCategoryRepository categoryRepository){
         return Gauge.builder("categories.count", categoryRepository::count).register(registry);
+    }
+
+    @Bean
+    public Gauge countPageViewPerMin(MeterRegistry registry){
+        return Gauge.builder("guru.springframework.services.listProducts.ProductService.pageViewsPerMin", ()-> new Integer(6))
+                .register(registry);
     }
 }
