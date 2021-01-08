@@ -3,9 +3,12 @@ package guru.springframework.services;
 import guru.springframework.domain.Product;
 import guru.springframework.repositories.ProductRepository;
 import guru.springframework.services.jms.JmsTextMessageService;
+
+import io.micrometer.core.instrument.Metrics;
 import org.apache.commons.collections4.IteratorUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.metrics.CounterService;
+//import org.springframework.boot.actuate.metrics.CounterService;
+
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,26 +21,26 @@ public class ProductServiceImpl implements ProductService {
 
     private ProductRepository productRepository;
     private JmsTextMessageService jmsTextMessageService;
-    private CounterService counterService;
 
     @Autowired
-    public ProductServiceImpl(ProductRepository productRepository, JmsTextMessageService jmsTextMessageService,
-                              CounterService counterService) {
+    public ProductServiceImpl(ProductRepository productRepository, JmsTextMessageService jmsTextMessageService
+                              ) {
         this.productRepository = productRepository;
         this.jmsTextMessageService = jmsTextMessageService;
-        this.counterService = counterService;
+
     }
 
     @Override
     public Product getProduct(Integer id) {
         jmsTextMessageService.sendTextMessage("Fetching Product ID: " + id );
-        counterService.increment("guru.springframework.services.getproduct");
-        return productRepository.findOne(id);
+        Metrics.counter("guru.springframework.services.getproduct").increment();
+        return productRepository.findById(id).orElseThrow();
     }
 
     @Override
     public List<Product> listProducts() {
         jmsTextMessageService.sendTextMessage("Listing Products");
+        Metrics.counter("guru.springframework.services.listproduct").increment();
         return IteratorUtils.toList(productRepository.findAll().iterator());
     }
 
